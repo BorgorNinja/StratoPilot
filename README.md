@@ -61,6 +61,15 @@ StratoPilot is built around a **Blender-first asset workflow**. The game must su
 
 > Aircraft, terrain, and prop models will be added by the project owner directly. This README exists to establish context and conventions ahead of that — actual integration code comes later.
 
+### Model Validation
+
+Before integrating any committed asset, run it through `tools/analyzer_tool.py` —
+a precision inspector for glTF/.glb (and .obj/.stl/.ply) models that checks scale
+sanity, geometry integrity (watertightness, normals, winding), UVs, materials,
+textures, and animations/rigs. See `tools/analyzer_tool.md` for full usage and
+how to interpret its output.
+
+
 ---
 
 ## 🧱 Tech Stack (To Be Finalized)
