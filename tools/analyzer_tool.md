@@ -50,7 +50,11 @@ and don't spend time installing the full package unless explicitly asked.
 Full precision: **`.glb` / `.gltf`** (materials, textures, animations, skins/armatures
 all introspected via `pygltflib` in addition to geometry via `trimesh`).
 
-Geometry-only (no material/animation introspection): `.obj`, `.stl`, `.ply`.
+Geometry + material linkage (no PBR/animation data): **`.obj`** — geometry via
+trimesh, plus a check on the paired `.mtl` for whether materials actually
+reference texture maps and whether loose image files in the folder are used.
+
+Geometry-only: `.stl`, `.ply`.
 
 Partial, best-effort: `.fbx` (trimesh's FBX support depends on optional backends
 and may fail on complex files — if it errors, ask for a `.glb` export instead).
@@ -123,11 +127,14 @@ Issue codes I should recognize at a glance:
 | `MISSING_UVS` | No UV coordinates — textures won't map |
 | `DUPLICATE_VERTICES` | Coincident verts (often harmless, sometimes an export artifact) |
 | `DEGENERATE_FACES` | Zero-area triangles |
-| `SCALE_OUTLIER` | Bounding box wildly off from `--expected-span` — classic "forgot Apply Scale in Blender" bug |
+| `SCALE_OUTLIER` | Whole-scene bounding box far off from `--expected-span` — classic "forgot Apply Scale in Blender" bug. `error` beyond 8x/⅛, `warning` beyond 3x/⅓ |
 | `OVER_TRIANGLE_BUDGET` | Total tris exceed the budget for `--category` |
 | `LARGE_TEXTURE` | Texture exceeds 4096px on its longest side |
 | `NPOT_TEXTURE` | Texture isn't power-of-two sized |
 | `NO_MATERIALS` | No materials defined in the glTF |
+| `MATERIAL_NO_TEXTURE` | (OBJ) A material in the `.mtl` has no `map_*` texture reference — will render flat-colored |
+| `ORPHANED_TEXTURES` | (OBJ) Image files sit next to the model but nothing in the `.mtl` references them — usually means textures exist but the link was lost on export |
+| `NO_MTL_FOUND` | (OBJ) The `.obj` references a `.mtl` that couldn't be found/opened |
 
 The **scale check is the single most useful signal** for this project specifically —
 the most common real-world Blender export mistake is an un-applied object scale,
@@ -149,6 +156,11 @@ correctly in any engine-side integration code later.
   skins/armatures, node names) is extracted with **pygltflib** by reading the
   raw glTF JSON/binary directly — trimesh's own glTF loader doesn't expose all
   of this cleanly, especially animation/skin data.
+- For `.obj` files, materials are read by parsing the referenced `.mtl`
+  directly (`_extract_obj_materials_and_orphans`), since OBJ has no PBR
+  concept — it only checks whether each material has *any* `map_*` texture
+  reference, and cross-checks loose image files in the same folder against
+  what the `.mtl` actually references, flagging unused ones.
 - Triangle budgets in `TRIANGLE_BUDGETS` are starting guesses (hero 80k, aircraft
   40k, prop 10k, terrain 250k, background 2k) and should be tuned once the game
   engine and target platform are finalized — they're not authoritative limits,
@@ -158,6 +170,20 @@ correctly in any engine-side integration code later.
   axis is Z-up; glTF's spec convention is Y-up; Blender's glTF exporter converts
   automatically on export. If orientation looks wrong in-engine, verify manually
   rather than trusting this heuristic alone.
+
+### Lesson learned: scale check must run on the whole scene, not sub-meshes
+
+The first version of the scale-outlier check compared each individual
+sub-mesh's bounding box against `--expected-span`. That's wrong for any
+multi-part model — wings, fuselage, and engines are each naturally smaller
+than the whole aircraft, so the check silently never fired on a real,
+uniformly-mis-scaled multi-part A380 model (~8x too small) that absolutely
+should have been flagged. Fixed by computing the check against the *assembled
+scene's* bounding box instead, with a tighter two-tier threshold (warning at
+3x/⅓, error at 8x/⅛ — the old thresholds, 5x/50x, were also too loose to
+catch real-world cases). Moral: when adding a geometric sanity check, test it
+against a multi-object scene before trusting it, not just a single-mesh test
+fixture — single-mesh tests can hide exactly this kind of bug.
 
 ## Extending the tool
 

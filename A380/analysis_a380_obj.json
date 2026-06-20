@@ -1,0 +1,433 @@
+{
+  "file_path": "/home/claude/stratopilot-repo/A380/a380.obj",
+  "file_format": "obj",
+  "file_size_bytes": 2699350,
+  "asset_category": "hero",
+  "object_count": 6,
+  "total_vertex_count": 76606,
+  "total_triangle_count": 38416,
+  "scene_bounding_box_size": [
+    9.889012,
+    2.886091,
+    9.414114000000001
+  ],
+  "up_axis_guess": "Y appears thinnest (consistent with Z-up orientation, e.g. raw Blender axes)",
+  "meshes": [
+    {
+      "name": "plane",
+      "vertex_count": 46380,
+      "face_count": 23248,
+      "triangle_count": 23248,
+      "bounding_box_size": [
+        1.164118,
+        2.8290949999999997,
+        9.414114000000001
+      ],
+      "bounding_box_min": [
+        -0.510966,
+        -0.144618,
+        -4.736557
+      ],
+      "bounding_box_max": [
+        0.653152,
+        2.684477,
+        4.677557
+      ],
+      "centroid": [
+        0.07113089095814362,
+        0.6718971722256196,
+        -0.03096379011015976
+      ],
+      "surface_area": 32.94017719282088,
+      "volume": null,
+      "is_watertight": false,
+      "is_winding_consistent": true,
+      "euler_number": 11565,
+      "has_normals": true,
+      "normals_consistent": true,
+      "uv_channel_count": 1,
+      "duplicate_vertex_count": 34752,
+      "degenerate_face_count": 0
+    },
+    {
+      "name": "wings",
+      "vertex_count": 1810,
+      "face_count": 912,
+      "triangle_count": 912,
+      "bounding_box_size": [
+        9.889012,
+        0.841198,
+        7.137993
+      ],
+      "bounding_box_min": [
+        -4.944506,
+        -0.00777,
+        -2.659187
+      ],
+      "bounding_box_max": [
+        4.944506,
+        0.833428,
+        4.478806
+      ],
+      "centroid": [
+        0.011763799976074546,
+        0.36922284613823597,
+        0.5595663735389567
+      ],
+      "surface_area": 33.902720674184025,
+      "volume": null,
+      "is_watertight": false,
+      "is_winding_consistent": true,
+      "euler_number": 450,
+      "has_normals": true,
+      "normals_consistent": true,
+      "uv_channel_count": 1,
+      "duplicate_vertex_count": 1338,
+      "degenerate_face_count": 0
+    },
+    {
+      "name": "Material",
+      "vertex_count": 768,
+      "face_count": 432,
+      "triangle_count": 432,
+      "bounding_box_size": [
+        6.595807000000001,
+        0.434722,
+        2.358933
+      ],
+      "bounding_box_min": [
+        -3.298137,
+        -0.005449,
+        -0.884619
+      ],
+      "bounding_box_max": [
+        3.29767,
+        0.429273,
+        1.474314
+      ],
+      "centroid": [
+        -0.00023370543326013373,
+        0.24782535841016048,
+        0.3367708834594515
+      ],
+      "surface_area": 4.832473046272469,
+      "volume": null,
+      "is_watertight": false,
+      "is_winding_consistent": true,
+      "euler_number": 166,
+      "has_normals": true,
+      "normals_consistent": true,
+      "uv_channel_count": 1,
+      "duplicate_vertex_count": 528,
+      "degenerate_face_count": 0
+    },
+    {
+      "name": "Material.002",
+      "vertex_count": 2048,
+      "face_count": 1024,
+      "triangle_count": 1024,
+      "bounding_box_size": [
+        6.829497,
+        0.39326900000000004,
+        0.955127
+      ],
+      "bounding_box_min": [
+        -3.414982,
+        -0.116443,
+        -1.112687
+      ],
+      "bounding_box_max": [
+        3.414515,
+        0.276826,
+        -0.15756
+      ],
+      "centroid": [
+        0.03493160086510326,
+        0.08019142506742198,
+        -0.6345236085586471
+      ],
+      "surface_area": 0.2485552998184135,
+      "volume": null,
+      "is_watertight": false,
+      "is_winding_consistent": true,
+      "euler_number": 512,
+      "has_normals": true,
+      "normals_consistent": true,
+      "uv_channel_count": 1,
+      "duplicate_vertex_count": 1280,
+      "degenerate_face_count": 0
+    },
+    {
+      "name": "Material.001",
+      "vertex_count": 19456,
+      "face_count": 9728,
+      "triangle_count": 9728,
+      "bounding_box_size": [
+        6.95711,
+        0.518327,
+        1.8494959999999998
+      ],
+      "bounding_box_min": [
+        -3.478788,
+        -0.193197,
+        -1.146334
+      ],
+      "bounding_box_max": [
+        3.478322,
+        0.32513,
+        0.703162
+      ],
+      "centroid": [
+        0.03493133119641186,
+        0.07497069966487437,
+        -0.351882016882918
+      ],
+      "surface_area": 1.1969157610729226,
+      "volume": null,
+      "is_watertight": false,
+      "is_winding_consistent": true,
+      "euler_number": 4864,
+      "has_normals": true,
+      "normals_consistent": true,
+      "uv_channel_count": 1,
+      "duplicate_vertex_count": 14072,
+      "degenerate_face_count": 0
+    },
+    {
+      "name": "engines",
+      "vertex_count": 6144,
+      "face_count": 3072,
+      "triangle_count": 3072,
+      "bounding_box_size": [
+        6.969322999999999,
+        0.531219,
+        1.542692
+      ],
+      "bounding_box_min": [
+        -3.484895,
+        -0.201614,
+        -1.048134
+      ],
+      "bounding_box_max": [
+        3.484428,
+        0.329605,
+        0.494558
+      ],
+      "centroid": [
+        0.03493274499225406,
+        0.0690783269702506,
+        -0.2761047714049628
+      ],
+      "surface_area": 3.239879445753522,
+      "volume": null,
+      "is_watertight": false,
+      "is_winding_consistent": true,
+      "euler_number": 1536,
+      "has_normals": true,
+      "normals_consistent": true,
+      "uv_channel_count": 1,
+      "duplicate_vertex_count": 4352,
+      "degenerate_face_count": 0
+    }
+  ],
+  "materials": [
+    {
+      "name": "Material",
+      "base_color_factor": null,
+      "metallic_factor": null,
+      "roughness_factor": null,
+      "has_base_color_texture": false,
+      "has_normal_texture": false,
+      "has_metallic_roughness_texture": false,
+      "has_emissive_texture": false,
+      "alpha_mode": null,
+      "double_sided": null
+    },
+    {
+      "name": "Material.001",
+      "base_color_factor": null,
+      "metallic_factor": null,
+      "roughness_factor": null,
+      "has_base_color_texture": false,
+      "has_normal_texture": false,
+      "has_metallic_roughness_texture": false,
+      "has_emissive_texture": false,
+      "alpha_mode": null,
+      "double_sided": null
+    },
+    {
+      "name": "Material.002",
+      "base_color_factor": null,
+      "metallic_factor": null,
+      "roughness_factor": null,
+      "has_base_color_texture": false,
+      "has_normal_texture": false,
+      "has_metallic_roughness_texture": false,
+      "has_emissive_texture": false,
+      "alpha_mode": null,
+      "double_sided": null
+    },
+    {
+      "name": "engines",
+      "base_color_factor": null,
+      "metallic_factor": null,
+      "roughness_factor": null,
+      "has_base_color_texture": false,
+      "has_normal_texture": false,
+      "has_metallic_roughness_texture": false,
+      "has_emissive_texture": false,
+      "alpha_mode": null,
+      "double_sided": null
+    },
+    {
+      "name": "plane",
+      "base_color_factor": null,
+      "metallic_factor": null,
+      "roughness_factor": null,
+      "has_base_color_texture": false,
+      "has_normal_texture": false,
+      "has_metallic_roughness_texture": false,
+      "has_emissive_texture": false,
+      "alpha_mode": null,
+      "double_sided": null
+    },
+    {
+      "name": "wings",
+      "base_color_factor": null,
+      "metallic_factor": null,
+      "roughness_factor": null,
+      "has_base_color_texture": false,
+      "has_normal_texture": false,
+      "has_metallic_roughness_texture": false,
+      "has_emissive_texture": false,
+      "alpha_mode": null,
+      "double_sided": null
+    }
+  ],
+  "textures": [],
+  "animations": [],
+  "skin_count": 0,
+  "node_hierarchy_depth": 6,
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "NOT_WATERTIGHT",
+      "message": "Mesh 'plane' is not watertight (holes/open edges present).",
+      "location": "plane"
+    },
+    {
+      "severity": "info",
+      "code": "DUPLICATE_VERTICES",
+      "message": "Mesh 'plane' has 34752 coincident duplicate vertices.",
+      "location": "plane"
+    },
+    {
+      "severity": "warning",
+      "code": "NOT_WATERTIGHT",
+      "message": "Mesh 'wings' is not watertight (holes/open edges present).",
+      "location": "wings"
+    },
+    {
+      "severity": "info",
+      "code": "DUPLICATE_VERTICES",
+      "message": "Mesh 'wings' has 1338 coincident duplicate vertices.",
+      "location": "wings"
+    },
+    {
+      "severity": "warning",
+      "code": "NOT_WATERTIGHT",
+      "message": "Mesh 'Material' is not watertight (holes/open edges present).",
+      "location": "Material"
+    },
+    {
+      "severity": "info",
+      "code": "DUPLICATE_VERTICES",
+      "message": "Mesh 'Material' has 528 coincident duplicate vertices.",
+      "location": "Material"
+    },
+    {
+      "severity": "warning",
+      "code": "NOT_WATERTIGHT",
+      "message": "Mesh 'Material.002' is not watertight (holes/open edges present).",
+      "location": "Material.002"
+    },
+    {
+      "severity": "info",
+      "code": "DUPLICATE_VERTICES",
+      "message": "Mesh 'Material.002' has 1280 coincident duplicate vertices.",
+      "location": "Material.002"
+    },
+    {
+      "severity": "warning",
+      "code": "NOT_WATERTIGHT",
+      "message": "Mesh 'Material.001' is not watertight (holes/open edges present).",
+      "location": "Material.001"
+    },
+    {
+      "severity": "info",
+      "code": "DUPLICATE_VERTICES",
+      "message": "Mesh 'Material.001' has 14072 coincident duplicate vertices.",
+      "location": "Material.001"
+    },
+    {
+      "severity": "warning",
+      "code": "NOT_WATERTIGHT",
+      "message": "Mesh 'engines' is not watertight (holes/open edges present).",
+      "location": "engines"
+    },
+    {
+      "severity": "info",
+      "code": "DUPLICATE_VERTICES",
+      "message": "Mesh 'engines' has 4352 coincident duplicate vertices.",
+      "location": "engines"
+    },
+    {
+      "severity": "error",
+      "code": "SCALE_OUTLIER",
+      "message": "Scene's longest dimension is 9.889m vs expected ~79.75m (0.12x). Severe scale mismatch \u2014 almost certainly an un-applied object scale in Blender before export.",
+      "location": null
+    },
+    {
+      "severity": "warning",
+      "code": "MATERIAL_NO_TEXTURE",
+      "message": "Material 'Material' in a380.mtl has no texture map reference (map_Kd/map_Bump/etc.) \u2014 it will render as a flat color, not a textured surface.",
+      "location": "Material"
+    },
+    {
+      "severity": "warning",
+      "code": "MATERIAL_NO_TEXTURE",
+      "message": "Material 'Material.001' in a380.mtl has no texture map reference (map_Kd/map_Bump/etc.) \u2014 it will render as a flat color, not a textured surface.",
+      "location": "Material.001"
+    },
+    {
+      "severity": "warning",
+      "code": "MATERIAL_NO_TEXTURE",
+      "message": "Material 'Material.002' in a380.mtl has no texture map reference (map_Kd/map_Bump/etc.) \u2014 it will render as a flat color, not a textured surface.",
+      "location": "Material.002"
+    },
+    {
+      "severity": "warning",
+      "code": "MATERIAL_NO_TEXTURE",
+      "message": "Material 'engines' in a380.mtl has no texture map reference (map_Kd/map_Bump/etc.) \u2014 it will render as a flat color, not a textured surface.",
+      "location": "engines"
+    },
+    {
+      "severity": "warning",
+      "code": "MATERIAL_NO_TEXTURE",
+      "message": "Material 'plane' in a380.mtl has no texture map reference (map_Kd/map_Bump/etc.) \u2014 it will render as a flat color, not a textured surface.",
+      "location": "plane"
+    },
+    {
+      "severity": "warning",
+      "code": "MATERIAL_NO_TEXTURE",
+      "message": "Material 'wings' in a380.mtl has no texture map reference (map_Kd/map_Bump/etc.) \u2014 it will render as a flat color, not a textured surface.",
+      "location": "wings"
+    },
+    {
+      "severity": "warning",
+      "code": "ORPHANED_TEXTURES",
+      "message": "4 image file(s) found alongside the model that no material references: swiss turbinenaufdruck.png, Unbenannt.png, untitled.jpg, a380 top.png. These are likely intended textures that were never linked in the material \u2014 re-export from Blender with image textures connected, or relink manually.",
+      "location": null
+    }
+  ]
+}

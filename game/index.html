@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StratoPilot — Prototype</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene"></canvas>
+
+    <div id="hud">
+      <div id="hud-left">
+        <div class="hud-stat"><span class="label">SPD</span><span id="hud-speed" class="value">0</span><span class="unit">kt</span></div>
+        <div class="hud-stat"><span class="label">ALT</span><span id="hud-alt" class="value">0</span><span class="unit">m</span></div>
+        <div class="hud-stat"><span class="label">THR</span><span id="hud-throttle" class="value">0</span><span class="unit">%</span></div>
+      </div>
+
+      <div id="hud-center-top">
+        <div id="combo-display" class="hidden">
+          <span id="combo-count">0</span>x COMBO
+        </div>
+      </div>
+
+      <div id="hud-right">
+        <div class="hud-stat"><span class="label">SCORE</span><span id="hud-score" class="value">0</span></div>
+        <div class="hud-stat"><span class="label">RINGS</span><span id="hud-rings" class="value">0</span></div>
+        <div id="boost-bar-wrap">
+          <span class="label">BOOST</span>
+          <div id="boost-bar-track"><div id="boost-bar-fill"></div></div>
+        </div>
+      </div>
+
+      <div id="crosshair"></div>
+
+      <div id="message-banner" class="hidden"></div>
+    </div>
+
+    <div id="start-screen">
+      <h1>STRATOPILOT</h1>
+      <p class="subtitle">Prototype Flight — Airbus A380 "Swiss"</p>
+      <div id="controls-list">
+        <div><kbd>&uarr;</kbd><kbd>&darr;</kbd> Pitch</div>
+        <div><kbd>&larr;</kbd><kbd>&rarr;</kbd> Roll</div>
+        <div><kbd>A</kbd><kbd>D</kbd> Yaw</div>
+        <div><kbd>W</kbd><kbd>S</kbd> Throttle</div>
+        <div><kbd>SPACE</kbd> Boost</div>
+        <div><kbd>R</kbd> Reset</div>
+      </div>
+      <p class="goal">Fly through the gold rings to score. Chain them quickly to build a combo.</p>
+      <button id="start-button">TAKE OFF</button>
+      <p id="loading-status">Loading aircraft model…</p>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

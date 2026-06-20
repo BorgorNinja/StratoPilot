@@ -365,6 +365,95 @@ def _extract_textures(path: str) -> list:
     return textures
 
 
+def _extract_obj_materials_and_orphans(path: str) -> tuple:
+    """For .obj files: parse the referenced .mtl to list materials and flag
+    materials with no texture map references, plus image files sitting in
+    the same folder that no material actually points to. This catches a
+    common real-world export problem: a Blender OBJ export where geometry
+    and materials carry over but image texture links are dropped, leaving
+    loose PNG/JPG files that nothing in the model actually uses.
+    """
+    materials = []
+    issues = []
+    if not path.lower().endswith(".obj"):
+        return materials, issues
+
+    folder = os.path.dirname(os.path.abspath(path))
+    mtl_path = None
+    try:
+        with open(path, "r", errors="ignore") as f:
+            for line in f:
+                if line.strip().lower().startswith("mtllib"):
+                    mtl_name = line.strip().split(None, 1)[1]
+                    candidate = os.path.join(folder, mtl_name)
+                    if os.path.isfile(candidate):
+                        mtl_path = candidate
+                    break
+    except Exception:
+        return materials, issues
+
+    if not mtl_path:
+        issues.append(Issue("warning", "NO_MTL_FOUND", "OBJ references no resolvable .mtl file; materials cannot be inspected."))
+        return materials, issues
+
+    current = None
+    mat_has_texture = {}
+    texture_refs = set()
+    try:
+        with open(mtl_path, "r", errors="ignore") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("newmtl"):
+                    current = line.split(None, 1)[1]
+                    mat_has_texture[current] = False
+                elif line.lower().startswith("map_") and current is not None:
+                    mat_has_texture[current] = True
+                    parts = line.split(None, 1)
+                    if len(parts) > 1:
+                        texture_refs.add(os.path.basename(parts[1].strip()))
+    except Exception:
+        return materials, issues
+
+    for name, has_tex in mat_has_texture.items():
+        materials.append(MaterialReport(
+            name=name,
+            base_color_factor=None,
+            metallic_factor=None,
+            roughness_factor=None,
+            has_base_color_texture=has_tex,
+            has_normal_texture=False,
+            has_metallic_roughness_texture=False,
+            has_emissive_texture=False,
+            alpha_mode=None,
+            double_sided=None,
+        ))
+        if not has_tex:
+            issues.append(Issue(
+                "warning", "MATERIAL_NO_TEXTURE",
+                f"Material '{name}' in {os.path.basename(mtl_path)} has no texture map reference "
+                f"(map_Kd/map_Bump/etc.) — it will render as a flat color, not a textured surface.",
+                location=name,
+            ))
+
+    # Look for image files in the same folder that no material references —
+    # a strong signal the textures exist but were never linked during export.
+    image_exts = (".png", ".jpg", ".jpeg", ".tga", ".bmp", ".tif", ".tiff")
+    try:
+        loose_images = [f for f in os.listdir(folder) if f.lower().endswith(image_exts)]
+    except Exception:
+        loose_images = []
+    unreferenced = [f for f in loose_images if f not in texture_refs]
+    if unreferenced and not texture_refs:
+        issues.append(Issue(
+            "warning", "ORPHANED_TEXTURES",
+            f"{len(unreferenced)} image file(s) found alongside the model that no material references: "
+            f"{', '.join(unreferenced)}. These are likely intended textures that were never linked in "
+            f"the material — re-export from Blender with image textures connected, or relink manually.",
+        ))
+
+    return materials, issues
+
+
 def analyze(path: str, category: str = "aircraft", expected_span: float = 12.0) -> ModelReport:
     if not os.path.isfile(path):
         raise FileNotFoundError(f"No such file: {path}")
@@ -419,15 +508,6 @@ def analyze(path: str, category: str = "aircraft", expected_span: float = 12.0) 
         if mr.degenerate_face_count > 0:
             issues.append(Issue("warning", "DEGENERATE_FACES", f"Mesh '{name}' has {mr.degenerate_face_count} zero-area (degenerate) faces.", location=name))
 
-        max_dim = max(mr.bounding_box_size) if mr.bounding_box_size else 0
-        if max_dim > 0 and (max_dim > expected_span * 5 or max_dim < expected_span / 50):
-            issues.append(Issue(
-                "warning", "SCALE_OUTLIER",
-                f"Mesh '{name}' longest dimension is {max_dim:.3f}m, far from expected ~{expected_span}m "
-                f"span. Likely a forgotten 'Apply Scale' in Blender before export.",
-                location=name,
-            ))
-
     budget = TRIANGLE_BUDGETS.get(category, TRIANGLE_BUDGETS["aircraft"])
     if total_tris > budget:
         issues.append(Issue(
@@ -441,7 +521,32 @@ def analyze(path: str, category: str = "aircraft", expected_span: float = 12.0) 
     else:
         scene_size = [0.0, 0.0, 0.0]
 
+    # Scene-level scale check. This MUST run against the whole assembled model,
+    # not individual sub-meshes (wings/fuselage/engines are naturally smaller
+    # than the full aircraft span — comparing a sub-part against the expected
+    # whole-aircraft span produces false negatives on real multi-part models).
+    scene_max_dim = max(scene_size) if scene_size else 0
+    if scene_max_dim > 0 and expected_span > 0:
+        ratio = scene_max_dim / expected_span
+        if ratio > 8 or ratio < 1 / 8:
+            issues.append(Issue(
+                "error", "SCALE_OUTLIER",
+                f"Scene's longest dimension is {scene_max_dim:.3f}m vs expected ~{expected_span}m "
+                f"({ratio:.2f}x). Severe scale mismatch — almost certainly an un-applied object "
+                f"scale in Blender before export.",
+            ))
+        elif ratio > 3 or ratio < 1 / 3:
+            issues.append(Issue(
+                "warning", "SCALE_OUTLIER",
+                f"Scene's longest dimension is {scene_max_dim:.3f}m vs expected ~{expected_span}m "
+                f"({ratio:.2f}x). Worth double-checking 'Apply Scale' (Ctrl+A) was used in Blender "
+                f"before export, or that --expected-span matches this specific aircraft.",
+            ))
+
     materials = _extract_gltf_materials(path)
+    obj_materials, obj_issues = _extract_obj_materials_and_orphans(path)
+    materials.extend(obj_materials)
+    issues.extend(obj_issues)
     textures = _extract_textures(path)
     animations, skin_count = _extract_gltf_animations_and_skins(path)
 
