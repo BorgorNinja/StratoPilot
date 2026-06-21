@@ -120,10 +120,34 @@ const aircraft = new THREE.Group();
 scene.add(aircraft);
 
 let modelLoaded = false;
+let loadFailed = false;
 const loader = new GLTFLoader();
+
+const resolvedModelUrl = new URL(MODEL_PATH, window.location.href).href;
+console.log('[StratoPilot] Attempting to load model from:', resolvedModelUrl);
+loadingStatus.textContent = 'Loading aircraft model…';
+
+// Watchdog: if nothing has happened after a few seconds, this is almost
+// always a local-server setup problem (wrong working directory, or the file
+// opened directly via file:// instead of served over http://), not a code
+// bug. Surface a concrete, actionable message instead of hanging forever.
+const STALL_WARNING_MS = 4000;
+const stallTimer = setTimeout(() => {
+  if (!modelLoaded && !loadFailed) {
+    loadingStatus.innerHTML =
+      `Still loading after ${STALL_WARNING_MS / 1000}s — this usually means it isn't being served correctly.<br>` +
+      `Trying to fetch: <code>${resolvedModelUrl}</code><br>` +
+      `Open that exact URL directly in a new browser tab. If you see a 404 or "file not found," ` +
+      `you're most likely running the local server from the <b>/game</b> folder instead of the ` +
+      `repo root — see game/README.md for the exact command. ` +
+      `Also check the browser console (F12 → Console) for the real error.`;
+  }
+}, STALL_WARNING_MS);
+
 loader.load(
   MODEL_PATH,
   (gltf) => {
+    clearTimeout(stallTimer);
     const model = gltf.scene;
     model.traverse((child) => {
       if (child.isMesh) {
@@ -140,11 +164,21 @@ loader.load(
     if (xhr.total) {
       const pct = Math.round((xhr.loaded / xhr.total) * 100);
       loadingStatus.textContent = `Loading aircraft model… ${pct}%`;
+    } else if (xhr.loaded) {
+      // Server didn't send a Content-Length header, so we can't show a %,
+      // but data IS arriving — show bytes so it's clear it isn't stuck.
+      loadingStatus.textContent = `Loading aircraft model… ${(xhr.loaded / 1024 / 1024).toFixed(1)} MB`;
     }
   },
   (err) => {
-    console.error('Failed to load model', err);
-    loadingStatus.textContent = 'Failed to load model — check console.';
+    clearTimeout(stallTimer);
+    loadFailed = true;
+    console.error('[StratoPilot] Failed to load model:', err);
+    loadingStatus.innerHTML =
+      `Failed to load the model.<br>` +
+      `Tried: <code>${resolvedModelUrl}</code><br>` +
+      `Make sure you're running a local server from the <b>repo root</b> (not the /game folder) — ` +
+      `see game/README.md. Check the browser console (F12) for the exact error.`;
   }
 );
 startButton.disabled = true;
