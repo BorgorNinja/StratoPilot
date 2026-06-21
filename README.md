@@ -4,8 +4,21 @@
 
 StratoPilot blends the satisfying feel of real flight mechanics with fast, rewarding, replayable gameplay loops. Think *Microsoft Flight Simulator* physics meeting *Subway Surfers* dopamine — easy to pick up, hard to put down, deeply satisfying to master.
 
-> 🚧 **Status: Pre-production / Design Phase**
-> This repository currently contains only project context and structure. No gameplay code has been written yet. Aircraft and environment models (Blender) will be committed by the project owner before active development begins.
+> 🚧 **Status: Early Prototype**
+> A working browser prototype exists in [`/game`](./game) — flyable A380 model, arcade flight physics, score-attack ring course. See **Quick Start** below to run it. Most of the game is still unbuilt; see the roadmap further down.
+
+## 🚀 Quick Start (run the prototype)
+
+```bash
+# from the repo root (the folder this README is in)
+python3 -m http.server 8000
+```
+Then open **http://localhost:8000/game/** in Chrome, Edge, or Firefox.
+
+⚠️ Don't double-click `game/index.html` directly — it won't work (browsers
+block local module/asset loading under `file://`). Full setup help and
+troubleshooting (including what to do if it hangs on "Loading aircraft
+model…") is in [`game/README.md`](./game/README.md).
 
 ---
 
