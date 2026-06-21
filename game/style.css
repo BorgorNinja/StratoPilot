@@ -141,6 +141,16 @@ html, body {
   opacity: 0.5;
 }
 
+#fps-counter {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  font-size: 11px;
+  opacity: 0.5;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
 #message-banner {
   position: absolute;
   top: 38%;
