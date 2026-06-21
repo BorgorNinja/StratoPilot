@@ -81,40 +81,76 @@ auto-respawn (score is kept, combo resets) — fast retry on purpose, per the
 
 ## What's actually implemented
 
-- Arcade-style flight model: throttle-driven thrust, speed-dependent lift
-  (with a soft stall below ~55 m/s), drag, gravity, boost.
+- **Arcade flight model, velocity locked to the nose direction.** The plane's
+  velocity is always exactly `forward * speed` — there's no separate momentum
+  vector that can drift away from where the aircraft is pointed. Speed itself
+  is driven by throttle thrust, drag (quadratic in speed), and a gravity
+  component along the pitch axis (diving converts altitude into speed,
+  climbing costs speed). A stall-assist nudges the nose down automatically
+  below ~60 m/s so the plane can't just hang motionless in midair — it noses
+  over and dives to regain speed, the way a real stall behaves. Cruises around
+  ~260 m/s at full throttle, ~345 m/s with boost.
 - Full 3-axis control (pitch/roll/yaw) with a touch of yaw→roll coupling for feel.
 - Chase camera that follows aircraft orientation (rolls with the plane) with a
   speed-reactive FOV kick for a sense of speed.
 - Procedurally generated, endlessly-recycled ring course (score-attack loop)
-  with combo scoring.
+  with combo scoring — ring spacing tuned for the higher cruise speeds above.
 - Placeholder ground (procedural grid texture) and cloud puffs — there's no
   real terrain asset yet, this is intentionally a stand-in per the project
   roadmap.
-- HUD: speed (knots), altitude, throttle %, score, rings hit, combo, boost meter.
+- HUD: speed (knots), altitude, throttle %, score, rings hit, combo, boost
+  meter, and a small FPS counter (bottom-left) so you can verify frame rate
+  yourself without opening dev tools.
+
+## Performance
+
+The scene is built to hit 60fps on reasonably modern hardware:
+
+- **Clouds are a single `InstancedMesh`.** The first version spawned ~210
+  individual `THREE.Mesh` objects (one draw call each) for decorative cloud
+  puffs — by far the biggest avoidable cost, especially on integrated/mobile
+  GPUs, which tend to be draw-call-bound. They're now one shared geometry
+  rendered in a single instanced draw call.
+- **Shadow map dropped from 2048→1024px** and switched from
+  `PCFSoftShadowMap` to the cheaper `PCFShadowMap` — a 2048 map is 4x the
+  fragment cost of 1024 for a difference that's barely visible at normal
+  chase-cam viewing distance.
+- **Pixel ratio capped at 1.5** instead of the device's full (sometimes 2-3x
+  on high-DPI screens) ratio — fragment cost scales with the square of this
+  number, so it's one of the cheapest wins available. Raise it in `main.js`
+  (`renderer.setPixelRatio(...)`) if your hardware has headroom.
+- **No per-frame allocations in the hot path.** Physics, controls, and camera
+  code now reuse a handful of scratch `Vector3`/`Quaternion` objects instead
+  of creating new ones every frame, avoiding steady GC pressure that can
+  cause periodic stutters even when average FPS looks fine.
+
+If you're still not seeing 60fps after this, check the FPS counter and the
+in-game category triangle budget (`A380/analysis_a380_corrected.md` — the
+aircraft sits right at the "hero asset" budget, ~38k triangles, rendered
+twice per frame once shadows are on, since it's a shadow caster). Biggest
+remaining lever would be reducing the aircraft's own polycount or further
+shrinking its 4096x2160 fuselage texture — neither done yet, see Next Steps.
 
 ## Known limitations / what to verify on first real playtest
 
 I built and wired this in a sandboxed environment with no real browser/WebGL
-available to me, so I could not visually test it myself. Two things in
-particular were derived analytically rather than confirmed by eye and are
-worth double-checking first:
+available to me, so I could not visually test it myself, and have been
+iterating based on your feedback. Worth double-checking:
 
-1. **Control sign conventions** (pitch/roll/yaw directions). I worked these
-   out from the quaternion math (see code comments in `main.js`) using the
-   confirmed nose direction (-Z, see `A380/NOTES.md` for how that was
-   determined from the geometry). They should be correct, but a live
-   playtest is the real test.
-2. **Ring size and collision thresholds** were tuned by calculation against
+1. **Control sign conventions** (pitch/roll/yaw directions) were worked out
+   from the quaternion math (see code comments in `main.js`) using the
+   confirmed nose direction (-Z, see `A380/NOTES.md`). Same approach was used
+   to confirm the stall auto-correction pitches the nose *down*, not up.
+2. **Flight-feel constants** (thrust, drag coefficient, stall speed, rotation
+   rates) in the "Physics tuning" block at the top of `main.js` are a
+   second-pass tuning aimed at "fast and responsive," not derived from real
+   A380 performance data — this is an arcade game, so "feels good" should
+   keep winning over realism when adjusting them further.
+3. **Ring size and collision thresholds** were tuned by calculation against
    the corrected aircraft's real-world dimensions (76m wingspan, 72.7m
-   length), not by eye. If rings feel too tight or too loose, `RING_RADIUS`,
-   `RING_TUBE`, and the collision thresholds in `checkRingCollisions()` in
-   `main.js` are the place to adjust.
-
-Flight-feel constants (thrust, drag, lift coefficients, rotation rates) are a
-first-pass tuning, not derived from real A380 performance data — this is an
-arcade game, not a study-level sim, so "feels good" should win over realism
-when adjusting them.
+   length) and the new higher cruise speeds. `RING_RADIUS`, `RING_TUBE`, and
+   the thresholds in `checkRingCollisions()` are the place to adjust if they
+   feel too tight or too loose.
 
 ## Next steps (not done yet)
 
@@ -122,6 +158,8 @@ when adjusting them.
 - Touch/gamepad controls.
 - Sound (engine, wind, ring-hit chime).
 - Menu/restart flow beyond the single start screen.
+- Shrink the aircraft's fuselage texture (currently 4096x2160) and/or reduce
+  its polycount if more frame-time headroom is needed on lower-end hardware.
 - Possibly fix the A380 model's non-watertight mesh and missing texture
   linkage at the source (re-export from Blender with materials properly
   connected) — see `A380/analysis_a380_corrected.md` for the full list of
